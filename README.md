@@ -9,6 +9,7 @@ Supports:
 - face detection
 - barcode scanning
 - text recognition (Android only)
+- streaming capture
 
 
 ### Example import

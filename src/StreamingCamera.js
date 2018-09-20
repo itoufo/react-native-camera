@@ -383,7 +383,7 @@ export default class Camera extends React.Component<PropsType, StateType> {
 
     if (this.state.isAuthorized || this.hasFaCC()) {
       return (
-        <StramingCamera
+        <StreamingCamera
           {...nativeProps}
           ref={this._setReference}
           onMountError={this._onMountError}
@@ -397,7 +397,7 @@ export default class Camera extends React.Component<PropsType, StateType> {
           onPictureSaved={this._onPictureSaved}
         >
           {this.renderChildren()}
-        </StramingCamera>
+        </StreamingCamera>
       );
     } else if (!this.state.isAuthorizationChecked) {
       return this.props.pendingAuthorizationView;

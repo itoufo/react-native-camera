@@ -22,6 +22,8 @@
 		71D5C72A201B8A2F0030A15E /* RNFaceDetectorPointTransformCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7147DBB8201553EE003C59C3 /* RNFaceDetectorPointTransformCalculator.m */; };
 		71D5C72B201B8A320030A15E /* RNFaceDetectorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 7147DBB520155340003C59C3 /* RNFaceDetectorModule.m */; };
 		71D5C72C201B8A360030A15E /* RNFaceDetectorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7147DBB22015319E003C59C3 /* RNFaceDetectorManager.m */; };
+		81C2D77F21534CA3008B78C2 /* StreamingCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2D77D21534CA3008B78C2 /* StreamingCameraManager.m */; };
+		81C2D78021534CA3008B78C2 /* StreamingCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2D77E21534CA3008B78C2 /* StreamingCamera.m */; };
 		9FE592B31CA3CBF500788287 /* RCTSensorOrientationChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FE592B21CA3CBF500788287 /* RCTSensorOrientationChecker.m */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +70,10 @@
 		71C7FFD22013C817006EB75A /* RNImageUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNImageUtils.m; sourceTree = "<group>"; };
 		71C7FFD42013C824006EB75A /* RNFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFileSystem.h; sourceTree = "<group>"; };
 		71C7FFD52013C824006EB75A /* RNFileSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFileSystem.m; sourceTree = "<group>"; };
+		81C2D77D21534CA3008B78C2 /* StreamingCameraManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamingCameraManager.m; sourceTree = "<group>"; };
+		81C2D77E21534CA3008B78C2 /* StreamingCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamingCamera.m; sourceTree = "<group>"; };
+		81C2D78121534CAD008B78C2 /* StreamingCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingCamera.h; sourceTree = "<group>"; };
+		81C2D78221534CAD008B78C2 /* StreamingCameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingCameraManager.h; sourceTree = "<group>"; };
 		9FE592B11CA3CBF500788287 /* RCTSensorOrientationChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSensorOrientationChecker.h; sourceTree = "<group>"; };
 		9FE592B21CA3CBF500788287 /* RCTSensorOrientationChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSensorOrientationChecker.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,6 +126,10 @@
 		714166162013E1B600EE9FCC /* RN */ = {
 			isa = PBXGroup;
 			children = (
+				81C2D78121534CAD008B78C2 /* StreamingCamera.h */,
+				81C2D78221534CAD008B78C2 /* StreamingCameraManager.h */,
+				81C2D77E21534CA3008B78C2 /* StreamingCamera.m */,
+				81C2D77D21534CA3008B78C2 /* StreamingCameraManager.m */,
 				71C7FFD42013C824006EB75A /* RNFileSystem.h */,
 				71C7FFD52013C824006EB75A /* RNFileSystem.m */,
 				71C7FFD12013C817006EB75A /* RNImageUtils.h */,
@@ -213,6 +223,7 @@
 				454EBCF41B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m in Sources */,
 				71C7FFD62013C824006EB75A /* RNFileSystem.m in Sources */,
 				71D5C729201B8A2D0030A15E /* RNFaceDetectorUtils.m in Sources */,
+				81C2D78021534CA3008B78C2 /* StreamingCamera.m in Sources */,
 				4107014E1ACB732B00C6AA39 /* RCTCameraManager.m in Sources */,
 				71D5C72C201B8A360030A15E /* RNFaceDetectorManager.m in Sources */,
 				7103647B20195C53009691D1 /* RNFaceDetectorManagerStub.m in Sources */,
@@ -221,6 +232,7 @@
 				71C7FFD02013C7E5006EB75A /* RNCameraUtils.m in Sources */,
 				7162BE682013EAA400FE51FF /* RNCameraManager.m in Sources */,
 				7162BE672013EAA100FE51FF /* RNCamera.m in Sources */,
+				81C2D77F21534CA3008B78C2 /* StreamingCameraManager.m in Sources */,
 				9FE592B31CA3CBF500788287 /* RCTSensorOrientationChecker.m in Sources */,
 				71C7FFD32013C817006EB75A /* RNImageUtils.m in Sources */,
 				71D5C72B201B8A320030A15E /* RNFaceDetectorModule.m in Sources */,

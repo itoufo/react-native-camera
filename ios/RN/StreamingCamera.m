@@ -543,10 +543,10 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 #endif
         [self setupOrDisableBarcodeScanner];
 
-        __weak RNCamera *weakSelf = self;
+        __weak StreamingCamera *weakSelf = self;
         [self setRuntimeErrorHandlingObserver:
          [NSNotificationCenter.defaultCenter addObserverForName:AVCaptureSessionRuntimeErrorNotification object:self.session queue:nil usingBlock:^(NSNotification *note) {
-            RNCamera *strongSelf = weakSelf;
+            StreamingCamera *strongSelf = weakSelf;
             dispatch_async(strongSelf.sessionQueue, ^{
                 // Manually restarting the session since it must
                 // have been stopped due to an error.

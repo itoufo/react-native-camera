@@ -446,7 +446,7 @@ export default class Camera extends React.Component<PropsType, StateType> {
 
 export const Constants = Camera.Constants;
 
-const StreamingCamera = requireNativeComponent('StramingCamera', Camera, {
+const StreamingCamera = requireNativeComponent('StreamingCamera', Camera, {
   nativeOnly: {
     accessibilityComponentType: true,
     accessibilityLabel: true,

@@ -47,6 +47,7 @@
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
+- (void)onStreaming:(NSDictionary *)event;
 
 @end
 

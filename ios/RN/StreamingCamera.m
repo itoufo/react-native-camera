@@ -21,6 +21,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onMountError;
 @property (nonatomic, copy) RCTDirectEventBlock onBarCodeRead;
 @property (nonatomic, copy) RCTDirectEventBlock onPictureSaved;
+@property (nonatomic, copy) RCTDirectEventBlock onStreaming;
 
 @end
 
@@ -71,6 +72,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
     if (_onBarCodeRead) {
         _onBarCodeRead(event);
+    }
+}
+
+- (void)onStreaming:(NSDictionary *)event
+{
+    if (_onStreaming) {
+        _onStreaming(event);
     }
 }
 

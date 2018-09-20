@@ -79,6 +79,7 @@ type PropsType = typeof View.props & {
     type?: number | string,
     onCameraReady?: Function,
     onBarCodeRead?: Function,
+    onStreaming?: Function,
     onPictureSaved?: Function,
     flashMode?: number | string,
     barCodeTypes?: Array<string>,
@@ -358,6 +359,7 @@ export default class Camera extends React.Component<PropsType, StateType> {
                     onMountError={this._onMountError}
                     onCameraReady={this._onCameraReady}
                     onBarCodeRead={this._onObjectDetected(this.props.onBarCodeRead)}
+                    onStreaming={this._onObjectDetected(this.props.onStreaming)}
                     onTextRecognized={this._onObjectDetected(this.props.onTextRecognized)}
                     onPictureSaved={this._onPictureSaved}
                 >
@@ -373,6 +375,9 @@ export default class Camera extends React.Component<PropsType, StateType> {
 
     _convertNativeProps(props: PropsType) {
         const newProps = mapValues(props, this._convertProp);
+        if (props.onStreaming) {
+            newProps.streamingEnabled = true;
+        }
 
         if (props.onBarCodeRead) {
             newProps.barCodeScannerEnabled = true;
@@ -407,9 +412,11 @@ const StreamingCamera = requireNativeComponent('StreamingCamera', Camera, {
         accessibilityLabel: true,
         accessibilityLiveRegion: true,
         barCodeScannerEnabled: true,
+        streamingEnabled: true,
         textRecognizerEnabled: true,
         importantForAccessibility: true,
         onBarCodeRead: true,
+        onStreaming: true,
         onCameraReady: true,
         onPictureSaved: true,
         onLayout: true,

@@ -610,11 +610,17 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             RCTLog(@"%s: %@", __func__, error);
             return;
         }
+        
+        /** Streaming **/
+        NSDictionary* settings = @{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]};
+        AVCaptureVideoDataOutput* dataOutput = [[AVCaptureVideoDataOutput alloc] init];
+        dataOutput.videoSettings = settings;
+        [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
         [self.session removeInput:self.videoCaptureDeviceInput];
+        
         if ([self.session canAddInput:captureDeviceInput]) {
             [self.session addInput:captureDeviceInput];
-
             self.videoCaptureDeviceInput = captureDeviceInput;
             [self updateFlashMode];
             [self updateZoom];
@@ -624,9 +630,18 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             [self.previewLayer.connection setVideoOrientation:orientation];
             [self _updateMetadataObjectsToRecognize];
         }
-
+        if ([self.session canAddOutput:dataOutput]) {
+            [self.session addOutput:dataOutput];
+            self.session.sessionPreset = AVCaptureSessionPresetHigh;
+        }
         [self.session commitConfiguration];
     });
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
+{
+    // 画像の表示
+    NSLog("asdjkifaohesfokankjlvdsnajlk");
 }
 
 #pragma mark - internal

@@ -44,11 +44,8 @@
 - (void)stopRecording;
 - (void)resumePreview;
 - (void)pausePreview;
-- (void)setupOrDisableBarcodeScanner;
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
-- (void)onCodeRead:(NSDictionary *)event;
-- (void)onFacesDetected:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end

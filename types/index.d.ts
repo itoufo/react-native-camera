@@ -95,8 +95,9 @@ export interface RNCameraProps {
     // -- FACE DETECTION PROPS
 
     onGoogleVisionBarcodesDetected?(response: { barcodes: Barcode[] }): void;
+    onFacesDetected?(response: { faces: Face[] }): void;
     onFaceDetectionError?(response: { isOperational: boolean }): void;
-    faceDetectionMode?: keyof FaceDetectionMode;
+    faceDetectionMode?: keyof FaceDetectionMode
     faceDetectionLandmarks?: keyof FaceDetectionLandmarks;
     faceDetectionClassifications?: keyof FaceDetectionClassifications;
 
@@ -211,17 +212,6 @@ interface RecordResponse {
 }
 
 export class RNCamera extends Component<RNCameraProps & ViewProperties> {
-    static Constants: Constants;
-
-    takePictureAsync(options?: TakePictureOptions): Promise<TakePictureResponse>;
-    recordAsync(options?: RecordOptions): Promise<RecordResponse>;
-    stopRecording(): void;
-
-    /** Android only */
-    getSupportedRatiosAsync(): Promise<string[]>;
-}
-
-export class StreamingCamera extends Component<RNCameraProps & ViewProperties> {
     static Constants: Constants;
 
     takePictureAsync(options?: TakePictureOptions): Promise<TakePictureResponse>;

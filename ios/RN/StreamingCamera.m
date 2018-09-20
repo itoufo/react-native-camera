@@ -455,7 +455,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         }
       }
     }
-    
+
     dispatch_async(self.sessionQueue, ^{
         [self updateFlashMode];
         NSString *path = nil;
@@ -511,8 +511,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         }
 
         self.session.sessionPreset = AVCaptureSessionPresetPhoto;
-        
-        // [self setupOrDisableBarcodeScanner];
 
         __weak StreamingCamera *weakSelf = self;
         [self setRuntimeErrorHandlingObserver:
@@ -576,7 +574,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         NSError *error = nil;
         AVCaptureDevice *captureDevice = [RNCameraUtils deviceWithMediaType:AVMediaTypeVideo preferringPosition:self.presetCamera];
         AVCaptureDeviceInput *captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
-        
+
         /** Streaming **/
         self.videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
         self.videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_32BGRA]};
@@ -588,7 +586,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             RCTLog(@"%s: %@", __func__, error);
             return;
         }
-        
+
         if ([self.session canAddInput:captureDeviceInput]) {
             [self.session addInput:captureDeviceInput];
             self.videoCaptureDeviceInput = captureDeviceInput;
@@ -702,16 +700,11 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 }
 
 - (void)setupOrDisableStreaming{
-    
+
 }
 
 # pragma mark - AVCaptureMetadataOutput
 
-- (void)setupOrDisableBarcodeScanner
-{
-    [self _setupOrDisableMetadataOutput];
-    [self _updateMetadataObjectsToRecognize];
-}
 
 - (void)_setupOrDisableMetadataOutput
 {
@@ -831,7 +824,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     } else if (self.videoRecordedReject != nil) {
         self.videoRecordedReject(@"E_RECORDING_FAILED", @"An error occurred while recording a video.", error);
     }
-    
+
 }
 
 - (void)cleanupCamera {
@@ -855,29 +848,29 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 - (void)mirrorVideo:(NSURL *)inputURL completion:(void (^)(NSURL* outputUR))completion {
     AVAsset* videoAsset = [AVAsset assetWithURL:inputURL];
     AVAssetTrack* clipVideoTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] firstObject];
-    
+
     AVMutableComposition* composition = [[AVMutableComposition alloc] init];
     [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-    
+
     AVMutableVideoComposition* videoComposition = [[AVMutableVideoComposition alloc] init];
     videoComposition.renderSize = CGSizeMake(clipVideoTrack.naturalSize.height, clipVideoTrack.naturalSize.width);
     videoComposition.frameDuration = CMTimeMake(1, 30);
-    
+
     AVMutableVideoCompositionLayerInstruction* transformer = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:clipVideoTrack];
-    
+
     AVMutableVideoCompositionInstruction* instruction = [[AVMutableVideoCompositionInstruction alloc] init];
     instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(60, 30));
-    
+
     CGAffineTransform transform = CGAffineTransformMakeScale(-1.0, 1.0);
     transform = CGAffineTransformTranslate(transform, -clipVideoTrack.naturalSize.width, 0);
     transform = CGAffineTransformRotate(transform, M_PI/2.0);
     transform = CGAffineTransformTranslate(transform, 0.0, -clipVideoTrack.naturalSize.width);
-    
+
     [transformer setTransform:transform atTime:kCMTimeZero];
-    
+
     [instruction setLayerInstructions:@[transformer]];
     [videoComposition setInstructions:@[instruction]];
-    
+
     // Export
     AVAssetExportSession* exportSession = [AVAssetExportSession exportSessionWithAsset:videoAsset presetName:AVAssetExportPreset640x480];
     NSString* filePath = [RNFileSystem generatePathInDirectory:[[RNFileSystem cacheDirectoryPath] stringByAppendingString:@"CameraFlip"] withExtension:@".mp4"];

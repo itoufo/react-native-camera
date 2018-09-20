@@ -195,28 +195,6 @@ RCT_CUSTOM_VIEW_PROPERTY(pictureSize, NSString *, StreamingCamera)
     [view updatePictureSize];
 }
 
-
-RCT_CUSTOM_VIEW_PROPERTY(faceDetectorEnabled, BOOL, StreamingCamera)
-{
-    view.isDetectingFaces = [RCTConvert BOOL:json];
-    [view updateFaceDetecting:json];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(faceDetectionMode, NSInteger, StreamingCamera)
-{
-    [view updateFaceDetectionMode:json];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(faceDetectionLandmarks, NSString, StreamingCamera)
-{
-    [view updateFaceDetectionLandmarks:json];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(faceDetectionClassifications, NSString, StreamingCamera)
-{
-    [view updateFaceDetectionClassifications:json];
-}
-
 RCT_CUSTOM_VIEW_PROPERTY(barCodeScannerEnabled, BOOL, StreamingCamera)
 {
     

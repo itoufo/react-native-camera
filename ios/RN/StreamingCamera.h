@@ -39,10 +39,6 @@
 - (void)updateZoom;
 - (void)updateWhiteBalance;
 - (void)updatePictureSize;
-- (void)updateFaceDetecting:(id)isDetectingFaces;
-- (void)updateFaceDetectionMode:(id)requestedMode;
-- (void)updateFaceDetectionLandmarks:(id)requestedLandmarks;
-- (void)updateFaceDetectionClassifications:(id)requestedClassifications;
 - (void)takePicture:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)record:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)stopRecording;
@@ -52,6 +48,7 @@
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
 - (void)onCodeRead:(NSDictionary *)event;
+- (void)onFacesDetected:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end

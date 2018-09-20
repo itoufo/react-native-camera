@@ -222,6 +222,17 @@ export class RNCamera extends Component<RNCameraProps & ViewProperties> {
     getSupportedRatiosAsync(): Promise<string[]>;
 }
 
+export class StreamingCamera extends Component<RNCameraProps & ViewProperties> {
+    static Constants: Constants;
+
+    takePictureAsync(options?: TakePictureOptions): Promise<TakePictureResponse>;
+    recordAsync(options?: RecordOptions): Promise<RecordResponse>;
+    stopRecording(): void;
+
+    /** Android only */
+    getSupportedRatiosAsync(): Promise<string[]>;
+}
+
 interface DetectionOptions {
     mode?: keyof FaceDetectionMode,
     detectLandmarks?: keyof FaceDetectionLandmarks,

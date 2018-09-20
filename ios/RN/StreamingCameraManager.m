@@ -195,18 +195,6 @@ RCT_CUSTOM_VIEW_PROPERTY(pictureSize, NSString *, StreamingCamera)
     [view updatePictureSize];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(barCodeScannerEnabled, BOOL, StreamingCamera)
-{
-    
-    view.isReadingBarCodes = [RCTConvert BOOL:json];
-    [view setupOrDisableBarcodeScanner];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(barCodeTypes, NSArray, StreamingCamera)
-{
-    [view setBarCodeTypes:[RCTConvert NSArray:json]];
-}
-
 RCT_REMAP_METHOD(takePicture,
                  options:(NSDictionary *)options
                  reactTag:(nonnull NSNumber *)reactTag

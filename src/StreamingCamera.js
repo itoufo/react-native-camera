@@ -152,7 +152,6 @@ export default class Camera extends React.Component<PropsType, StateType> {
     VideoCodec: CameraManager.VideoCodec,
     BarCodeType: CameraManager.BarCodeType,
     GoogleVisionBarcodeDetection: CameraManager.GoogleVisionBarcodeDetection,
-    FaceDetection: CameraManager.FaceDetection,
     CameraStatus,
     VideoStabilization: CameraManager.VideoStabilization,
   };
@@ -378,7 +377,6 @@ export default class Camera extends React.Component<PropsType, StateType> {
             this.props.onGoogleVisionBarcodesDetected,
           )}
           onBarCodeRead={this._onObjectDetected(this.props.onBarCodeRead)}
-          onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}
           onTextRecognized={this._onObjectDetected(this.props.onTextRecognized)}
           onPictureSaved={this._onPictureSaved}
         >

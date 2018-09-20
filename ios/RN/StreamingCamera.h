@@ -35,6 +35,8 @@
 @property(assign, nonatomic) AVVideoCodecType videoCodecType;
 @property (assign, nonatomic) AVCaptureVideoStabilizationMode videoStabilizationMode;
 
+@property (strong, nonatomic) AVCaptureVideoDataOutput *videoDataOutput;
+
 - (id)initWithBridge:(RCTBridge *)bridge;
 - (void)updateType;
 - (void)updateFlashMode;

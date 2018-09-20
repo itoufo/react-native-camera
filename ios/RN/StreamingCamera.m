@@ -20,7 +20,6 @@
 @property (nonatomic, copy) RCTDirectEventBlock onCameraReady;
 @property (nonatomic, copy) RCTDirectEventBlock onMountError;
 @property (nonatomic, copy) RCTDirectEventBlock onBarCodeRead;
-@property (nonatomic, copy) RCTDirectEventBlock onFacesDetected;
 @property (nonatomic, copy) RCTDirectEventBlock onPictureSaved;
 
 @end
@@ -51,16 +50,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
                                                      name:UIDeviceOrientationDidChangeNotification
                                                    object:nil];
         self.autoFocus = -1;
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(bridgeDidForeground:)
-        //                                                     name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
-        //                                                   object:self.bridge];
-        //
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(bridgeDidBackground:)
-        //                                                     name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
-        //                                                   object:self.bridge];
-
     }
     return self;
 }
@@ -424,7 +413,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 #if __has_include(<GoogleMobileVision/GoogleMobileVision.h>)
         [_faceDetectorManager stopFaceDetection];
 #endif
-        [self setupMovieFileCapture];
+        //[self setupMovieFileCapture];
     }
 
     if (self.movieFileOutput == nil || self.movieFileOutput.isRecording || _videoRecordedResolve != nil || _videoRecordedReject != nil) {
@@ -523,24 +512,14 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         }
 
         self.session.sessionPreset = AVCaptureSessionPresetPhoto;
-        
-        AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-        if ([self.session canAddOutput:stillImageOutput]) {
-            stillImageOutput.outputSettings = @{AVVideoCodecKey : AVVideoCodecJPEG};
-            [self.session addOutput:stillImageOutput];
-            [stillImageOutput setHighResolutionStillImageOutputEnabled:YES];
-            self.stillImageOutput = stillImageOutput;
-        }
-
-#if __has_include(<GoogleMobileVision/GoogleMobileVision.h>)
-        [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer];
-#else
-        // If AVCaptureVideoDataOutput is not required because of Google Vision
-        // (see comment in -record), we go ahead and add the AVCaptureMovieFileOutput
-        // to avoid an exposure rack on some devices that can cause the first few
-        // frames of the recorded output to be underexposed.
-        [self setupMovieFileCapture];
-#endif
+//        AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+//        if ([self.session canAddOutput:stillImageOutput]) {
+//            stillImageOutput.outputSettings = @{AVVideoCodecKey : AVVideoCodecJPEG};
+//            [self.session addOutput:stillImageOutput];
+//            [stillImageOutput setHighResolutionStillImageOutputEnabled:YES];
+//            self.stillImageOutput = stillImageOutput;
+//        }
+//
         [self setupOrDisableBarcodeScanner];
 
         __weak StreamingCamera *weakSelf = self;
@@ -605,19 +584,17 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         NSError *error = nil;
         AVCaptureDevice *captureDevice = [RNCameraUtils deviceWithMediaType:AVMediaTypeVideo preferringPosition:self.presetCamera];
         AVCaptureDeviceInput *captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
+        /** Streaming **/
+        self.videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
+        self.videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_32BGRA]};
+        [self.videoDataOutput setAlwaysDiscardsLateVideoFrames:TRUE];
+        [self.videoDataOutput setSampleBufferDelegate:self queue:self.sessionQueue];
+        [self.session addOutput:self.videoDataOutput];
 
         if (error || captureDeviceInput == nil) {
             RCTLog(@"%s: %@", __func__, error);
             return;
         }
-        
-        /** Streaming **/
-        NSDictionary* settings = @{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]};
-        AVCaptureVideoDataOutput* dataOutput = [[AVCaptureVideoDataOutput alloc] init];
-        dataOutput.videoSettings = settings;
-        [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
-
-        [self.session removeInput:self.videoCaptureDeviceInput];
         
         if ([self.session canAddInput:captureDeviceInput]) {
             [self.session addInput:captureDeviceInput];
@@ -630,19 +607,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             [self.previewLayer.connection setVideoOrientation:orientation];
             [self _updateMetadataObjectsToRecognize];
         }
-        
-        [self.session addOutput:dataOutput];
-        self.session.sessionPreset = AVCaptureSessionPresetHigh;
         [self.session commitConfiguration];
     });
 }
-
-- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
-{
-    // 画像の表示
-    NSLog(@"asdjkifaohesfokankjlvdsnajlk");
-}
-
 #pragma mark - internal
 
 - (void)updateSessionPreset:(AVCaptureSessionPreset)preset
@@ -746,11 +713,15 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 - (void)setupOrDisableBarcodeScanner
 {
     [self _setupOrDisableMetadataOutput];
-    [self _updateMetadataObjectsToRecognize];
+    // [self _updateMetadataObjectsToRecognize];
 }
 
 - (void)_setupOrDisableMetadataOutput
 {
+    
+    
+    /*`
+    
     if ([self isReadingBarCodes] && (_metadataOutput == nil || ![self.session.outputs containsObject:_metadataOutput])) {
         AVCaptureMetadataOutput *metadataOutput = [[AVCaptureMetadataOutput alloc] init];
         if ([self.session canAddOutput:metadataOutput]) {
@@ -762,6 +733,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         [self.session removeOutput:_metadataOutput];
         _metadataOutput = nil;
     }
+     */
 }
 
 - (void)_updateMetadataObjectsToRecognize
@@ -783,9 +755,25 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     [_metadataOutput setMetadataObjectTypes:availableRequestedObjectTypes];
 }
 
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
+{
+    NSLog(@"**********************");
+    // 画像の表示
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"asdjkifaohesfokankjlvdsnajlk");
+        NSLog(@"**********************");
+        NSLog(@"asdjkifaohesfokankjlvdsnajlk");
+        NSLog(@"asdjkifaohesfokankjlvdsnajlk");
+    });
+}
+
+
+
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects
        fromConnection:(AVCaptureConnection *)connection
 {
+    NSLog(@"captureOutput");
     for(AVMetadataObject *metadata in metadataObjects) {
         if([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
             AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
@@ -815,16 +803,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 }
 
 # pragma mark - AVCaptureMovieFileOutput
-
-- (void)setupMovieFileCapture
-{
-    AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-
-    if ([self.session canAddOutput:movieFileOutput]) {
-        [self.session addOutput:movieFileOutput];
-        self.movieFileOutput = movieFileOutput;
-    }
-}
 
 - (void)cleanupMovieFileCapture
 {
@@ -943,16 +921,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 #endif
 
     return nil;
-}
-
-- (void)onFacesDetected:(NSArray<NSDictionary *> *)faces
-{
-    if (_onFacesDetected) {
-        _onFacesDetected(@{
-                           @"type": @"face",
-                           @"faces": faces
-                           });
-    }
 }
 
 @end

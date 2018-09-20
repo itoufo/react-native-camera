@@ -11,7 +11,7 @@
 
 @class StreamingCamera;
 
-@interface StreamingCamera : UIView <AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate, RNFaceDetectorDelegate>
+@interface StreamingCamera : UIView <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property(nonatomic, strong) dispatch_queue_t sessionQueue;
 @property(nonatomic, strong) AVCaptureSession *session;

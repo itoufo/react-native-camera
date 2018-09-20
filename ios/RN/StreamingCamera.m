@@ -630,10 +630,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             [self.previewLayer.connection setVideoOrientation:orientation];
             [self _updateMetadataObjectsToRecognize];
         }
-        if ([self.session canAddOutput:dataOutput]) {
-            [self.session addOutput:dataOutput];
-            self.session.sessionPreset = AVCaptureSessionPresetHigh;
-        }
+        
+        [self.session addOutput:dataOutput];
+        self.session.sessionPreset = AVCaptureSessionPresetHigh;
         [self.session commitConfiguration];
     });
 }
@@ -641,7 +640,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
     // 画像の表示
-    NSLog("asdjkifaohesfokankjlvdsnajlk");
+    NSLog(@"asdjkifaohesfokankjlvdsnajlk");
 }
 
 #pragma mark - internal

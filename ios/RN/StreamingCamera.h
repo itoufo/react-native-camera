@@ -3,12 +3,6 @@
 #import <React/RCTBridgeModule.h>
 #import <UIKit/UIKit.h>
 
-#if __has_include("RNFaceDetectorManager.h")
-#import "RNFaceDetectorManager.h"
-#else
-#import "RNFaceDetectorManagerStub.h"
-#endif
-
 @class StreamingCamera;
 
 @interface StreamingCamera : UIView <AVCaptureVideoDataOutputSampleBufferDelegate>
@@ -58,7 +52,6 @@
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
 - (void)onCodeRead:(NSDictionary *)event;
-- (void)onFacesDetected:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end

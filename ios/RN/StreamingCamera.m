@@ -34,7 +34,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         self.bridge = bridge;
         self.session = [AVCaptureSession new];
         self.sessionQueue = dispatch_queue_create("cameraQueue", DISPATCH_QUEUE_SERIAL);
-        self.faceDetectorManager = [self createFaceDetectorManager];
 #if !(TARGET_IPHONE_SIMULATOR)
         self.previewLayer =
         [AVCaptureVideoPreviewLayer layerWithSession:self.session];
@@ -512,15 +511,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         }
 
         self.session.sessionPreset = AVCaptureSessionPresetPhoto;
-//        AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-//        if ([self.session canAddOutput:stillImageOutput]) {
-//            stillImageOutput.outputSettings = @{AVVideoCodecKey : AVVideoCodecJPEG};
-//            [self.session addOutput:stillImageOutput];
-//            [stillImageOutput setHighResolutionStillImageOutputEnabled:YES];
-//            self.stillImageOutput = stillImageOutput;
-//        }
-//
-        [self setupOrDisableBarcodeScanner];
+        
+        // [self setupOrDisableBarcodeScanner];
 
         __weak StreamingCamera *weakSelf = self;
         [self setRuntimeErrorHandlingObserver:
@@ -584,6 +576,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         NSError *error = nil;
         AVCaptureDevice *captureDevice = [RNCameraUtils deviceWithMediaType:AVMediaTypeVideo preferringPosition:self.presetCamera];
         AVCaptureDeviceInput *captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
+        
         /** Streaming **/
         self.videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
         self.videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_32BGRA]};
@@ -708,20 +701,20 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     });
 }
 
+- (void)setupOrDisableStreaming{
+    
+}
+
 # pragma mark - AVCaptureMetadataOutput
 
 - (void)setupOrDisableBarcodeScanner
 {
     [self _setupOrDisableMetadataOutput];
-    // [self _updateMetadataObjectsToRecognize];
+    [self _updateMetadataObjectsToRecognize];
 }
 
 - (void)_setupOrDisableMetadataOutput
 {
-    
-    
-    /*`
-    
     if ([self isReadingBarCodes] && (_metadataOutput == nil || ![self.session.outputs containsObject:_metadataOutput])) {
         AVCaptureMetadataOutput *metadataOutput = [[AVCaptureMetadataOutput alloc] init];
         if ([self.session canAddOutput:metadataOutput]) {
@@ -733,7 +726,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         [self.session removeOutput:_metadataOutput];
         _metadataOutput = nil;
     }
-     */
 }
 
 - (void)_updateMetadataObjectsToRecognize
@@ -773,7 +765,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects
        fromConnection:(AVCaptureConnection *)connection
 {
-    NSLog(@"captureOutput");
     for(AVMetadataObject *metadata in metadataObjects) {
         if([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
             AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
@@ -903,24 +894,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             NSLog(@"Export failed %@", exportSession.error);
         }
     }];
-}
-
-# pragma mark - Face detector
-
-- (id)createFaceDetectorManager
-{
-    Class faceDetectorManagerClass = NSClassFromString(@"RNFaceDetectorManager");
-    Class faceDetectorManagerStubClass = NSClassFromString(@"RNFaceDetectorManagerStub");
-
-#if __has_include(<GoogleMobileVision/GoogleMobileVision.h>)
-    if (faceDetectorManagerClass) {
-        return [[faceDetectorManagerClass alloc] initWithSessionQueue:_sessionQueue delegate:self];
-    } else if (faceDetectorManagerStubClass) {
-        return [[faceDetectorManagerStubClass alloc] init];
-    }
-#endif
-
-    return nil;
 }
 
 @end

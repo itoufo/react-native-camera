@@ -1,5 +1,4 @@
 #import "StreamingCamera.h"
-#import "StreamingCameraManager.h"
 #import "RNFileSystem.h"
 #import "RNImageUtils.h"
 #import <React/RCTBridge.h>

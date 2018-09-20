@@ -95,7 +95,6 @@ export interface RNCameraProps {
     // -- FACE DETECTION PROPS
 
     onGoogleVisionBarcodesDetected?(response: { barcodes: Barcode[] }): void;
-    onFacesDetected?(response: { faces: Face[] }): void;
     onFaceDetectionError?(response: { isOperational: boolean }): void;
     faceDetectionMode?: keyof FaceDetectionMode;
     faceDetectionLandmarks?: keyof FaceDetectionLandmarks;

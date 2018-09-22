@@ -763,9 +763,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     CGImageRef quartzImage = CGBitmapContextCreateImage(context);
     NSLog(@"%@",quartzImage);
     UIImage* image = [UIImage imageWithCGImage:quartzImage];
-    NSData* jpgData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 1.0f)];
+    NSData* jpgData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 0.1f)];
     NSString* jpg64Str = [jpgData base64EncodedStringWithOptions:NSDataBase64Encoding76CharacterLineLength];
-    NSLog(jpg64Str);
+    NSDictionary *event = @{
+                            @"imagedata": jpg64Str
+                            };
+    [self onStreaming:event];
+    
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
     CVPixelBufferUnlockBaseAddress(imageBuffer,0);

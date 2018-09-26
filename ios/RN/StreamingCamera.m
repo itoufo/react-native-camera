@@ -44,6 +44,14 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         self.paused = NO;
         [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
         [self initializeCaptureSessionInput];
+        
+        int cacheSizeDisk = 100 * 1024 * 1024; // 32MB
+        int cacheSizeMemory = 100 * 1024 * 1024; // 8MB
+        NSLog(@"Disk Limit: %u bytes and converted to MB: %u", [NSURLCache sharedURLCache].diskCapacity, [NSURLCache sharedURLCache].diskCapacity/1024/1024);
+        NSLog(@"Memory Limit: %u bytes and converted to MB: %u", [NSURLCache sharedURLCache].memoryCapacity, [NSURLCache sharedURLCache].memoryCapacity/1024/1024);
+        NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:cacheSizeMemory diskCapacity:cacheSizeDisk diskPath:@"nsurlcache"];
+        [NSURLCache setSharedURLCache:sharedCache];
+
         [self startSession];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(orientationChanged:)
@@ -751,6 +759,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
+    [connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
+    
     // 画像の表示
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
@@ -761,15 +771,15 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
     CGImageRef quartzImage = CGBitmapContextCreateImage(context);
-    NSLog(@"%@",quartzImage);
     UIImage* image = [UIImage imageWithCGImage:quartzImage];
     NSData* jpgData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 0.1f)];
     NSString* jpg64Str = [jpgData base64EncodedStringWithOptions:NSDataBase64Encoding76CharacterLineLength];
     NSDictionary *event = @{
-                            @"imagedata": jpg64Str
-                            };
+              @"imagedata": jpg64Str,
+              @"width": [NSNumber numberWithLong:width],
+              @"height": [NSNumber numberWithLong:height]
+    };
     [self onStreaming:event];
-    
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
     CVPixelBufferUnlockBaseAddress(imageBuffer,0);

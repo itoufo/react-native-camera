@@ -9,9 +9,9 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.cameraview.AspectRatio;
 import com.google.zxing.BarcodeFormat;
 import org.reactnative.barcodedetector.BarcodeFormatUtils;
-import org.reactnative.camera.tasks.ResolveTakenPictureAsyncTask;
+import org.reactnative.camera.tasks.StreamingResolveTakenPictureAsyncTask;
 import org.reactnative.camera.utils.ScopedContext;
-import org.reactnative.facedetector.RNFaceDetector;
+import org.reactnative.facedetector.StreamingFaceDetector;
 import com.google.android.cameraview.Size;
 
 import javax.annotation.Nullable;
@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-public class CameraModule extends ReactContextBaseJavaModule {
-  private static final String TAG = "CameraModule";
+public class StreamingCameraModule extends ReactContextBaseJavaModule {
+  private static final String TAG = "StreamingCameraModule";
 
   private ScopedContext mScopedContext;
   static final int VIDEO_2160P = 0;
@@ -56,7 +56,7 @@ public class CameraModule extends ReactContextBaseJavaModule {
         }
       });
 
-  public CameraModule(ReactApplicationContext reactContext) {
+  public StreamingCameraModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mScopedContext = new ScopedContext(reactContext);
   }
@@ -67,7 +67,7 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RNCameraModule";
+    return "StreamingCameraModule";
   }
 
 
@@ -92,8 +92,8 @@ public class CameraModule extends ReactContextBaseJavaModule {
           private Map<String, Object> getFaceDetectionModeConstants() {
             return Collections.unmodifiableMap(new HashMap<String, Object>() {
               {
-                put("fast", RNFaceDetector.FAST_MODE);
-                put("accurate", RNFaceDetector.ACCURATE_MODE);
+                put("fast", StreamingFaceDetector.FAST_MODE);
+                put("accurate", StreamingFaceDetector.ACCURATE_MODE);
               }
             });
           }
@@ -101,8 +101,8 @@ public class CameraModule extends ReactContextBaseJavaModule {
           private Map<String, Object> getFaceDetectionClassificationsConstants() {
             return Collections.unmodifiableMap(new HashMap<String, Object>() {
               {
-                put("all", RNFaceDetector.ALL_CLASSIFICATIONS);
-                put("none", RNFaceDetector.NO_CLASSIFICATIONS);
+                put("all", StreamingFaceDetector.ALL_CLASSIFICATIONS);
+                put("none", StreamingFaceDetector.NO_CLASSIFICATIONS);
               }
             });
           }
@@ -110,8 +110,8 @@ public class CameraModule extends ReactContextBaseJavaModule {
           private Map<String, Object> getFaceDetectionLandmarksConstants() {
             return Collections.unmodifiableMap(new HashMap<String, Object>() {
               {
-                put("all", RNFaceDetector.ALL_LANDMARKS);
-                put("none", RNFaceDetector.NO_LANDMARKS);
+                put("all", StreamingFaceDetector.ALL_LANDMARKS);
+                put("none", StreamingFaceDetector.NO_LANDMARKS);
               }
             });
           }
@@ -190,10 +190,10 @@ public class CameraModule extends ReactContextBaseJavaModule {
         uiManager.addUIBlock(new UIBlock() {
             @Override
             public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-                final RNCameraView cameraView;
+                final StreamingCameraView cameraView;
 
                 try {
-                    cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+                    cameraView = (StreamingCameraView) nativeViewHierarchyManager.resolveView(viewTag);
                     if (cameraView.isCameraOpened()) {
                         cameraView.pausePreview();
                     }
@@ -211,10 +211,10 @@ public class CameraModule extends ReactContextBaseJavaModule {
         uiManager.addUIBlock(new UIBlock() {
             @Override
             public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-                final RNCameraView cameraView;
+                final StreamingCameraView cameraView;
 
                 try {
-                    cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+                    cameraView = (StreamingCameraView) nativeViewHierarchyManager.resolveView(viewTag);
                     if (cameraView.isCameraOpened()) {
                         cameraView.resumePreview();
                     }
@@ -233,7 +233,7 @@ public class CameraModule extends ReactContextBaseJavaModule {
     uiManager.addUIBlock(new UIBlock() {
       @Override
       public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-          RNCameraView cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+          StreamingCameraView cameraView = (StreamingCameraView) nativeViewHierarchyManager.resolveView(viewTag);
           try {
             if (cameraView.isCameraOpened()) {
               cameraView.takePicture(options, promise, cacheDirectory);
@@ -256,10 +256,10 @@ public class CameraModule extends ReactContextBaseJavaModule {
       uiManager.addUIBlock(new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-              final RNCameraView cameraView;
+              final StreamingCameraView cameraView;
 
               try {
-                  cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+                  cameraView = (StreamingCameraView) nativeViewHierarchyManager.resolveView(viewTag);
                   if (cameraView.isCameraOpened()) {
                       cameraView.record(options, promise, cacheDirectory);
                   } else {
@@ -279,10 +279,10 @@ public class CameraModule extends ReactContextBaseJavaModule {
       uiManager.addUIBlock(new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-              final RNCameraView cameraView;
+              final StreamingCameraView cameraView;
 
               try {
-                  cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+                  cameraView = (StreamingCameraView) nativeViewHierarchyManager.resolveView(viewTag);
                   if (cameraView.isCameraOpened()) {
                       cameraView.stopRecording();
                   }
@@ -300,9 +300,9 @@ public class CameraModule extends ReactContextBaseJavaModule {
       uiManager.addUIBlock(new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-              final RNCameraView cameraView;
+              final StreamingCameraView cameraView;
               try {
-                  cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+                  cameraView = (StreamingCameraView) nativeViewHierarchyManager.resolveView(viewTag);
                   WritableArray result = Arguments.createArray();
                   if (cameraView.isCameraOpened()) {
                       Set<AspectRatio> ratios = cameraView.getSupportedAspectRatios();
@@ -326,10 +326,10 @@ public class CameraModule extends ReactContextBaseJavaModule {
         uiManager.addUIBlock(new UIBlock() {
             @Override
             public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-                final RNCameraView cameraView;
+                final StreamingCameraView cameraView;
 
                 try {
-                    cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+                    cameraView = (StreamingCameraView) nativeViewHierarchyManager.resolveView(viewTag);
                     WritableArray result = Arguments.createArray();
                     if (cameraView.isCameraOpened()) {
                         SortedSet<Size> sizes = cameraView.getAvailablePictureSizes(AspectRatio.parse(ratio));

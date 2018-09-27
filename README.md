@@ -358,3 +358,4 @@ Become a sponsor and get your logo on our README on Github with a link to your s
 ------------
 
 Thanks to Brent Vatne (@brentvatne) for the `react-native-video` module which provided me with a great example of how to set up this module.
+# react-native-camera-android

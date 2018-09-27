@@ -22,6 +22,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onBarCodeRead;
 @property (nonatomic, copy) RCTDirectEventBlock onPictureSaved;
 @property (nonatomic, copy) RCTDirectEventBlock onStreaming;
+@property (nonatomic, copy) NSDate *start;
 
 @end
 
@@ -41,17 +42,12 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
         self.previewLayer.needsDisplayOnBoundsChange = YES;
 #endif
+        NSLog(@"*******************************");
+        self.start = [NSDate date];
         self.paused = NO;
         [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
         [self initializeCaptureSessionInput];
         
-        int cacheSizeDisk = 100 * 1024 * 1024; // 32MB
-        int cacheSizeMemory = 100 * 1024 * 1024; // 8MB
-        NSLog(@"Disk Limit: %u bytes and converted to MB: %u", [NSURLCache sharedURLCache].diskCapacity, [NSURLCache sharedURLCache].diskCapacity/1024/1024);
-        NSLog(@"Memory Limit: %u bytes and converted to MB: %u", [NSURLCache sharedURLCache].memoryCapacity, [NSURLCache sharedURLCache].memoryCapacity/1024/1024);
-        NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:cacheSizeMemory diskCapacity:cacheSizeDisk diskPath:@"nsurlcache"];
-        [NSURLCache setSharedURLCache:sharedCache];
-
         [self startSession];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(orientationChanged:)
@@ -382,8 +378,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             if ([options[@"base64"] boolValue]) {
                 response[@"base64"] = [takenImageData base64EncodedStringWithOptions:0];
             }
-
-
 
             if ([options[@"exif"] boolValue]) {
                 int imageRotation;
@@ -759,31 +753,25 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-    [connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
-    
-    // 画像の表示
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVPixelBufferLockBaseAddress(imageBuffer, 0);
-    void *baseAddress = CVPixelBufferGetBaseAddressOfPlane(imageBuffer, 0);
-    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-    size_t width = CVPixelBufferGetWidth(imageBuffer);
-    size_t height = CVPixelBufferGetHeight(imageBuffer);
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
-    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
-    UIImage* image = [UIImage imageWithCGImage:quartzImage];
+    // [connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
+    NSDate *methodFinish = [NSDate date];
+    NSTimeInterval timePassed = [methodFinish timeIntervalSinceDate:self.start];
+    double interval = 0.2;
+    NSString *str = [NSString stringWithFormat:@"%d", timePassed];
+    //if (timePassed > interval) {
+    CGSize previewSize = CGSizeMake(_previewLayer.frame.size.width, _previewLayer.frame.size.height);
+    UIImage *image = [RNCameraUtils convertBufferToUIImage:sampleBuffer previewSize:previewSize];
     NSData* jpgData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 0.1f)];
     NSString* jpg64Str = [jpgData base64EncodedStringWithOptions:NSDataBase64Encoding76CharacterLineLength];
+    self.start = [NSDate date];
     NSDictionary *event = @{
-              @"imagedata": jpg64Str,
-              @"width": [NSNumber numberWithLong:width],
-              @"height": [NSNumber numberWithLong:height]
-    };
+                            @"imagedata": jpg64Str,
+                            @"width": [NSNumber numberWithLong:_previewLayer.frame.size.width],
+                            @"height": [NSNumber numberWithLong:_previewLayer.frame.size.height]
+                            };
     [self onStreaming:event];
-    CGContextRelease(context);
-    CGColorSpaceRelease(colorSpace);
-    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
-    CGImageRelease(quartzImage);
+    
+    //}
 }
 
 

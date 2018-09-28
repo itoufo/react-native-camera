@@ -213,8 +213,8 @@ public class RNCameraViewHelper {
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }
 
-  public static void emitStreamingEvent(ViewGroup view, String base64) {
-    StreamingEvent event = StreamingEvent.obtain(view.getId(), base64);
+  public static void emitStreamingEvent(ViewGroup view, String base64, int height, int width) {
+    StreamingEvent event = StreamingEvent.obtain(view.getId(), base64, height, width);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }

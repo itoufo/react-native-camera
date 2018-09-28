@@ -6,13 +6,22 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
-import java.util.Base64;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
+import android.util.Log;
+import android.util.Base64;
 
 public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String> {
   private byte[] mImageData;
   private int mWidth;
   private int mHeight;
   private StreamingAsyncTaskDelegate mDelegate;
+  private Bitmap mBitmap;
 
   //  note(sjchmiela): From my short research it's ok to ignore rotation of the image.
   public StreamingAsyncTask(
@@ -32,7 +41,7 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
     if (isCancelled() || mDelegate == null) {
       return null;
     }
-    String result = Base64.getEncoder().encodeToString(mImageData);
+    String result = Base64.encodeToString(mImageData, Base64.DEFAULT);
     return result;
   }
 
@@ -49,7 +58,7 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
   protected void onPostExecute(String result) {
     super.onPostExecute(result);
     if (result != null) {
-      mDelegate.onStreaming(result);
+      mDelegate.onStreaming(result, mHeight, mWidth);
     }
     mDelegate.onStreamingTaskCompleted();
   }

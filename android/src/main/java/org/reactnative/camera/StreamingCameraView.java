@@ -38,6 +38,7 @@ import org.reactnative.camera.tasks.FaceDetectorAsyncTask;
 import org.reactnative.camera.tasks.FaceDetectorAsyncTaskDelegate;
 import org.reactnative.camera.tasks.PictureSavedDelegate;
 import org.reactnative.camera.tasks.ResolveTakenPictureAsyncTask;
+import org.reactnative.camera.tasks.StreamingAsyncTask;
 import org.reactnative.camera.tasks.TextRecognizerAsyncTask;
 import org.reactnative.camera.tasks.TextRecognizerAsyncTaskDelegate;
 import org.reactnative.camera.tasks.StreamingAsyncTaskDelegate;
@@ -139,15 +140,14 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
 
       @Override
       public void onFramePreview(CameraView cameraView, byte[] data, int width, int height, int rotation) {
-        Log.d("ccccccccccccccc","aaaaaa");
         int correctRotation = RNCameraViewHelper.getCorrectCameraRotation(rotation, getFacing());
         boolean willCallBarCodeTask = mShouldScanBarCodes && !barCodeScannerTaskLock && cameraView instanceof BarCodeScannerAsyncTaskDelegate;
         boolean willCallFaceTask = mShouldDetectFaces && !faceDetectorTaskLock && cameraView instanceof FaceDetectorAsyncTaskDelegate;
         boolean willCallGoogleBarcodeTask = mShouldGoogleDetectBarcodes && !googleBarcodeDetectorTaskLock && cameraView instanceof BarcodeDetectorAsyncTaskDelegate;
         boolean willCallTextTask = mShouldRecognizeText && !textRecognizerTaskLock && cameraView instanceof TextRecognizerAsyncTaskDelegate;
-        boolean willStreaming = mShouldStreaming && !streamingLock && cameraView instanceof TextRecognizerAsyncTaskDelegate;
+        boolean willStreaming = mShouldStreaming && !streamingLock && cameraView instanceof StreamingAsyncTaskDelegate;
 
-        if (!willCallBarCodeTask && !willCallFaceTask && !willCallGoogleBarcodeTask && !willCallTextTask) {
+        if (!willCallBarCodeTask && !willCallFaceTask && !willCallGoogleBarcodeTask && !willCallTextTask && !willStreaming) {
           return;
         }
 
@@ -155,6 +155,11 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
             return;
         }
 
+        if(willStreaming){
+          streamingLock = true;
+          StreamingAsyncTaskDelegate delegate = (StreamingAsyncTaskDelegate) cameraView;
+          new StreamingAsyncTask(delegate, data, width, height).execute();
+        }
         if (willCallBarCodeTask) {
           barCodeScannerTaskLock = true;
           BarCodeScannerAsyncTaskDelegate delegate = (BarCodeScannerAsyncTaskDelegate) cameraView;
@@ -327,17 +332,18 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
   }
 
   public void onStreamingTaskCompleted() {
+    streamingLock = false;
     if (!mShouldStreaming) {
       return;
     }
     RNCameraViewHelper.emitStreamingCompletedEvent(this);
   }
 
-  public void onStreaming(String base64) {
+  public void onStreaming(String base64, int height, int width) {
     if (!mShouldStreaming) {
       return;
     }
-    RNCameraViewHelper.emitStreamingEvent(this, base64);
+    RNCameraViewHelper.emitStreamingEvent(this, base64, height, width);
   }
   public void onBarCodeRead(Result barCode) {
     String barCodeType = barCode.getBarcodeFormat().toString();

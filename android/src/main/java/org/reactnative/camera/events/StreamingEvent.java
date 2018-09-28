@@ -13,21 +13,25 @@ public class StreamingEvent extends Event<StreamingEvent> {
       new Pools.SynchronizedPool<>(3);
 
   private String mBase64;
+  private int mHeight;
+  private int mWidth;
 
   private StreamingEvent() {}
 
-  public static StreamingEvent obtain(int viewTag, String base64) {
+  public static StreamingEvent obtain(int viewTag, String base64, int height, int width) {
     StreamingEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new StreamingEvent();
     }
-    event.init(viewTag, base64);
+    event.init(viewTag, base64, height, width);
     return event;
   }
 
-  private void init(int viewTag, String base64) {
+  private void init(int viewTag, String base64, int height, int width) {
     super.init(viewTag);
     mBase64 = base64;
+    mHeight = height;
+    mWidth = width;
   }
 
   @Override
@@ -43,7 +47,9 @@ public class StreamingEvent extends Event<StreamingEvent> {
   private WritableMap serializeEventData() {
     WritableMap event = Arguments.createMap();
     event.putInt("target", getViewTag());
-    event.putString("data", mBase64);
+    event.putString("imagedata", mBase64);
+    event.putInt("width", mWidth);
+    event.putInt("height", mHeight);
     return event;
   }
 }

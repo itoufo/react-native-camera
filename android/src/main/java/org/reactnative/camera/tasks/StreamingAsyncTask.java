@@ -12,9 +12,13 @@ import java.io.ByteArrayOutputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.media.ExifInterface;
 import android.util.Log;
 import android.util.Base64;
+import android.hardware.Camera;
 
 public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String> {
   private byte[] mImageData;
@@ -41,9 +45,22 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
     if (isCancelled() || mDelegate == null) {
       return null;
     }
-    String result = Base64.encodeToString(mImageData, Base64.DEFAULT);
+    byte[] baos = convertYuvToJpeg(mImageData, mWidth, mHeight);
+    StringBuilder dataBuilder = new StringBuilder();
+    dataBuilder.append(Base64.encodeToString(baos, Base64.DEFAULT));
+    String result = dataBuilder.toString();
     return result;
   }
+
+  public byte[] convertYuvToJpeg(byte[] data, int width, int height) {
+    YuvImage image = new YuvImage(data, ImageFormat.NV21, width, height, null);
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    int quality = 20; //set quality
+    image.compressToJpeg(new Rect(0, 0, width, height), quality, baos);//this line decreases the image quality
+    return baos.toByteArray();
+  }
+
 
   private byte[] rotateImage(byte[]imageData,int width, int height) {
     byte[] rotated = new byte[imageData.length];

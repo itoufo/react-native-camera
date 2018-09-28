@@ -213,6 +213,18 @@ public class RNCameraViewHelper {
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }
 
+  public static void emitStreamingEvent(ViewGroup view, String base64) {
+    StreamingEvent event = StreamingEvent.obtain(view.getId(), base64);
+    ReactContext reactContext = (ReactContext) view.getContext();
+    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
+  }
+
+  public static void emitStreamingCompletedEvent(ViewGroup view) {
+    StreamingCompletedEvent event = StreamingCompletedEvent.obtain(view.getId());
+    ReactContext reactContext = (ReactContext) view.getContext();
+    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
+  }
+
   // Barcode detection events
 
   public static void emitBarcodesDetectedEvent(

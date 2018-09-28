@@ -24,6 +24,7 @@ public class RNCameraPackage implements ReactPackage {
         return Arrays.<NativeModule>asList(
                 new RCTCameraModule(reactApplicationContext),
                 new CameraModule(reactApplicationContext),
+                new StreamingCameraModule(reactApplicationContext),
                 new FaceDetectorModule(reactApplicationContext)
         );
     }
@@ -37,7 +38,8 @@ public class RNCameraPackage implements ReactPackage {
     public List<ViewManager> createViewManagers(ReactApplicationContext reactApplicationContext) {
         return Arrays.<ViewManager>asList(
                 new RCTCameraViewManager(),
-                new CameraViewManager()
+                new CameraViewManager(),
+                new StreamingViewManager()
         );
     }
 }

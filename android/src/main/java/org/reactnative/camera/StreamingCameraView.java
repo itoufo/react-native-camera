@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.media.CamcorderProfile;
 import android.media.MediaActionSound;
 import android.os.AsyncTask;
@@ -91,6 +92,8 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
   private int mFaceDetectionClassifications = RNFaceDetector.NO_CLASSIFICATIONS;
   private int mGoogleVisionBarCodeType = Barcode.ALL_FORMATS;
 
+  private Rect wRect;
+
   public StreamingCameraView(ThemedReactContext themedReactContext) {
     super(themedReactContext, true);
     mThemedReactContext = themedReactContext;
@@ -158,7 +161,7 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
         if(willStreaming){
           streamingLock = true;
           StreamingAsyncTaskDelegate delegate = (StreamingAsyncTaskDelegate) cameraView;
-          new StreamingAsyncTask(delegate, data, width, height).execute();
+          new StreamingAsyncTask(delegate, data, width, height, rotation, wRect).execute();
         }
         if (willCallBarCodeTask) {
           barCodeScannerTaskLock = true;
@@ -195,11 +198,13 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
     }
     float width = right - left;
     float height = bottom - top;
+
     float ratio = getAspectRatio().toFloat();
     int orientation = getResources().getConfiguration().orientation;
     int correctHeight;
     int correctWidth;
     this.setBackgroundColor(Color.BLACK);
+    wRect = new Rect(left, top, right, bottom);
     if (orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
       if (ratio * height < width) {
         correctHeight = (int) (width / ratio);

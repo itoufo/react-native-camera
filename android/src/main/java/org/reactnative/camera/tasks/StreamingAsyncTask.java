@@ -9,7 +9,7 @@ import com.google.zxing.common.HybridBinarizer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
+import android.graphics.Matrix;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -24,6 +24,8 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
   private byte[] mImageData;
   private int mWidth;
   private int mHeight;
+  private int mOrientation;
+  private Rect mRect;
   private StreamingAsyncTaskDelegate mDelegate;
   private Bitmap mBitmap;
 
@@ -32,12 +34,16 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
       StreamingAsyncTaskDelegate delegate,
       byte[] imageData,
       int width,
-      int height
+      int height,
+      int orientation,
+      Rect rect
   ) {
     mImageData = imageData;
     mWidth = width;
     mHeight = height;
+    mRect = rect;
     mDelegate = delegate;
+    mOrientation = orientation;
   }
 
   @Override
@@ -45,32 +51,36 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
     if (isCancelled() || mDelegate == null) {
       return null;
     }
-    byte[] baos = convertYuvToJpeg(mImageData, mWidth, mHeight);
-    StringBuilder dataBuilder = new StringBuilder();
-    dataBuilder.append(Base64.encodeToString(baos, Base64.DEFAULT));
-    String result = dataBuilder.toString();
-    return result;
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    Bitmap bmp = convertYuvToJpeg(mImageData, mWidth, mHeight);
+    bmp.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+    byte[] baos = byteArrayOutputStream.toByteArray();
+//    StringBuilder dataBuilder = new StringBuilder();
+//    dataBuilder.append(Base64.encodeToString(baos, Base64.DEFAULT));
+//    String result = dataBuilder.toString();
+    return Base64.encodeToString(baos, Base64.DEFAULT);
   }
 
-  public byte[] convertYuvToJpeg(byte[] data, int width, int height) {
+  public Bitmap convertYuvToJpeg(byte[] data, int width, int height) {
     YuvImage image = new YuvImage(data, ImageFormat.NV21, width, height, null);
-
+    Matrix matrix = new Matrix();
+    matrix.postRotate(90);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     int quality = 20; //set quality
     image.compressToJpeg(new Rect(0, 0, width, height), quality, baos);//this line decreases the image quality
-    return baos.toByteArray();
+    byte[] jdata = baos.toByteArray();
+    BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
+    bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+    Bitmap bmp = BitmapFactory.decodeByteArray(jdata, 0, jdata.length, bitmapFatoryOptions);
+
+    Log.d("width", String.valueOf(width));
+    Log.d("height", String.valueOf(height));
+    Log.d("out width", String.valueOf(bitmapFatoryOptions.outWidth));
+    Log.d("out height", String.valueOf(bitmapFatoryOptions.outHeight));
+
+    return Bitmap.createBitmap(bmp, 0, 0, bitmapFatoryOptions.outWidth, bitmapFatoryOptions.outHeight, matrix, true);
   }
 
-
-  private byte[] rotateImage(byte[]imageData,int width, int height) {
-    byte[] rotated = new byte[imageData.length];
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        rotated[x * height + height - y - 1] = imageData[x + y * width];
-      }
-    }
-    return rotated;
-  }
   @Override
   protected void onPostExecute(String result) {
     super.onPostExecute(result);

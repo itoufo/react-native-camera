@@ -51,8 +51,10 @@ public class StreamingEvent extends Event<StreamingEvent> {
     WritableMap event = Arguments.createMap();
     event.putInt("target", getViewTag());
     event.putString("imagedata", mBase64);
-    event.putInt("width", 600);
-    event.putInt("height", 600);
+    event.putInt("width", mRect.width());
+    event.putInt("height", mRect.height());
+//    event.putInt("width", 300);
+//    event.putInt("height", 400);
     return event;
   }
 }

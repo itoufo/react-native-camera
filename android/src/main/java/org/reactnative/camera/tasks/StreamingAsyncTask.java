@@ -64,34 +64,59 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
   }
 
   public Bitmap convertYuvToJpeg(byte[] data) {
-    int maxNum = Math.max(1000, 1001);
     int correctScreenHeight;
     int correctScreenWidth;
     int screenWidth = mScreenWidth;
     int screenHeight = mScreenHeight;
     float ratio = (float)imgWidth/(float)imgHeight;
     Log.d("ratio", String.valueOf(ratio));
+
+    int width = mRect.width();
+    int height = mRect.height();
+
     if (mOrientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
       Log.d("shape", "横長");
-      if (ratio * screenHeight < screenWidth) { //横長
-        correctScreenHeight = (int) (screenWidth / ratio);
-        correctScreenWidth = (int) screenWidth;
+      if (ratio * height < width) { //横長
+        correctScreenHeight = (int) (width/ ratio);
+        correctScreenWidth = (int) width;
       } else {
-        correctScreenWidth = (int) (screenHeight * ratio);
-        correctScreenHeight = (int) screenHeight;
+        correctScreenWidth = (int) (height * ratio);
+        correctScreenHeight = (int) height;
       }
     } else {
       Log.d("shape", "縦長");
-      if (ratio * screenWidth > screenHeight) {
-        correctScreenHeight = (int) (screenWidth * ratio);
-        correctScreenWidth = (int) screenWidth;
+      if (ratio * width > height) {
+        correctScreenHeight = (int) (width * ratio);
+        correctScreenWidth = (int) width;
       } else {
-        correctScreenWidth = (int) (screenHeight / ratio);
-        correctScreenHeight = (int) screenHeight;
+        correctScreenWidth = (int) (height / ratio);
+        correctScreenHeight = (int) height;
       }
     }
-    int paddingX = (int) ((correctScreenWidth - screenWidth) / 2);
-    int paddingY = (int) ((correctScreenHeight - screenHeight) / 2);
+    float imgPreviewRate = ((float)imgWidth/(float)correctScreenHeight);
+
+    int paddingX2 = (int) ((correctScreenHeight - height) / 2);
+    int paddingY2 = (int) ((correctScreenWidth - width) / 2);
+
+    int paddingX3 = (int) (paddingX2*imgPreviewRate);
+    int paddingY3 = (int) (paddingY2*imgPreviewRate);
+
+    Log.d("debug", "***********************************");
+    Log.d("screenPreviewRate", String.valueOf(imgPreviewRate));
+
+    Log.d("correctScreenWidth", String.valueOf((int)(correctScreenWidth)));
+    Log.d("correctScreenHeight", String.valueOf((int)(correctScreenHeight)));
+
+    Log.d("width", String.valueOf((int)(width)));
+    Log.d("height", String.valueOf((int)(height)));
+
+    Log.d("paddingX", String.valueOf((int)(paddingX2)));
+    Log.d("paddingY", String.valueOf((int)(paddingY2)));
+
+    Log.d("paddingX2", String.valueOf((int)(paddingX2*imgPreviewRate)));
+    Log.d("paddingY2", String.valueOf((int)(paddingY2*imgPreviewRate)));
+    Log.d("debug", "***********************************");
+
     float screenImgRatio = (float)correctScreenWidth/(float)imgHeight;
 
     YuvImage image = new YuvImage(data, ImageFormat.NV21, imgWidth, imgHeight, null);
@@ -103,29 +128,21 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
     bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
     Bitmap bmp = BitmapFactory.decodeByteArray(jdata, 0, jdata.length, bitmapFatoryOptions);
 
-//    Log.d("screenHeight", String.valueOf((int)(screenHeight)));
-//    Log.d("screenWidth", String.valueOf((int)(screenWidth)));
-//
-//    Log.d("correctScreenWidth", String.valueOf((int)(correctScreenWidth)));
-//    Log.d("correctScreenHeight", String.valueOf((int)(correctScreenHeight)));
-//
-//    Log.d("imgWidth", String.valueOf((int)(imgWidth)));
-//    Log.d("imgHeight", String.valueOf((int)(imgHeight)));
-//    Log.d("screenImgRatio", String.valueOf(screenImgRatio));
-//
-//    Log.d("paddingX", String.valueOf((int)(paddingX)));
-//    Log.d("paddingY", String.valueOf((int)(paddingY)));
-//
-//    Log.d("top", String.valueOf(((float)mRect.top/screenImgRatio)));
-//    Log.d("left", String.valueOf(((float)mRect.left/screenImgRatio)));
-//    Log.d("right", String.valueOf(((float)mRect.right/screenImgRatio)));
-//    Log.d("bottom", String.valueOf(((float)mRect.bottom/screenImgRatio)));
-//
-//    Log.d("x", String.valueOf((int)((float)(mRect.top - paddingY)/screenImgRatio)));
-//    Log.d("y", String.valueOf(((int)((float)(mRect.left - paddingX)/screenImgRatio))));
-//
-//    Log.d("width", String.valueOf(((int)((float)mRect.height()/screenImgRatio))));
-//    Log.d("height", String.valueOf(((int)((float)mRect.width()/screenImgRatio))));
+    Log.d("screenHeight", String.valueOf((int)(screenHeight)));
+    Log.d("screenWidth", String.valueOf((int)(screenWidth)));
+
+    Log.d("rect height", String.valueOf((int)(mRect.height())));
+    Log.d("rect width", String.valueOf((int)(mRect.width())));
+
+    Log.d("correctScreenWidth", String.valueOf((int)(correctScreenWidth)));
+    Log.d("correctScreenHeight", String.valueOf((int)(correctScreenHeight)));
+
+    Log.d("imgWidth", String.valueOf((int)(imgWidth)));
+    Log.d("imgHeight", String.valueOf((int)(imgHeight)));
+    Log.d("screenImgRatio", String.valueOf(screenImgRatio));
+
+    Log.d("width", String.valueOf(((int)((float)mRect.height()/screenImgRatio))));
+    Log.d("height", String.valueOf(((int)((float)mRect.width()/screenImgRatio))));
 
     Matrix matrix = new Matrix();
     matrix.postRotate(90);
@@ -133,7 +150,8 @@ public class StreamingAsyncTask extends android.os.AsyncTask<Void, Void, String>
     matrix.preScale(scaleRate, scaleRate);
     Log.d("scaleRate", String.valueOf(scaleRate));
     return Bitmap.createBitmap(bmp,
-            paddingX, paddingY, imgWidth - paddingX*2,imgHeight - paddingY*2,
+            paddingX3, paddingY3, imgWidth - paddingX3*2,imgHeight - paddingY3*2,
+//            0, 0, 800, 600,
             matrix,
             true
     );

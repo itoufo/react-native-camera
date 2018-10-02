@@ -53,7 +53,7 @@ public class StreamingEvent extends Event<StreamingEvent> {
     event.putInt("target", getViewTag());
     event.putString("imagedata", mBase64);
     event.putInt("width", (int)imgWidth);
-    event.putInt("height", (int)(imgWidth / (float)mRect.width() * (float)mRect.height());
+    event.putInt("height", (int)(imgWidth / (float)mRect.width() * (float)mRect.height()));
 //    event.putInt("width", 300);
 //    event.putInt("height", 400);
     return event;

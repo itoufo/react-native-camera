@@ -12,6 +12,8 @@ import {
     ActivityIndicator,
     Text,
     StyleSheet,
+    Dimensions,
+    PixelRatio
 } from 'react-native';
 
 import type { FaceFeature } from './FaceDetector';
@@ -31,6 +33,7 @@ const styles = StyleSheet.create({
 });
 
 type Orientation = 'auto' | 'landscapeLeft' | 'landscapeRight' | 'portrait' | 'portraitUpsideDown';
+var {wHeight, wWidth} = Dimensions.get('window');
 
 type PictureOptions = {
     quality?: number,
@@ -73,6 +76,8 @@ type EventCallbackArgumentsType = {
 };
 
 type PropsType = typeof View.props & {
+    screenHeight?: number,
+    screenWidth?: number,
     zoom?: number,
     ratio?: string,
     focusDepth?: number,
@@ -161,6 +166,8 @@ export default class Camera extends React.Component<PropsType, StateType> {
         ...ViewPropTypes,
         zoom: PropTypes.number,
         ratio: PropTypes.string,
+        screenHeight: PropTypes.number,
+        screenWidth: PropTypes.number,
         focusDepth: PropTypes.number,
         onMountError: PropTypes.func,
         onCameraReady: PropTypes.func,
@@ -187,6 +194,8 @@ export default class Camera extends React.Component<PropsType, StateType> {
         zoom: 0,
         ratio: '4:3',
         focusDepth: 0,
+        screenWidth: 0,
+        screenHeight: 0,
         type: CameraManager.Type.back,
         autoFocus: CameraManager.AutoFocus.on,
         flashMode: CameraManager.FlashMode.off,
@@ -219,12 +228,13 @@ export default class Camera extends React.Component<PropsType, StateType> {
 
     constructor(props: PropsType) {
         super(props);
+        var { width, height, scale } = Dimensions.get('window');
         this._lastEvents = {};
         this._lastEventsTimes = {};
         this.state = {
             isAuthorized: false,
             isAuthorizationChecked: false,
-        };
+       };
     }
 
     async takePictureAsync(options?: PictureOptions) {
@@ -351,7 +361,6 @@ export default class Camera extends React.Component<PropsType, StateType> {
 
     render() {
         const nativeProps = this._convertNativeProps(this.props);
-
         if (this.state.isAuthorized || this.hasFaCC()) {
             return (
                 <StreamingCamera
@@ -377,7 +386,12 @@ export default class Camera extends React.Component<PropsType, StateType> {
 
     _convertNativeProps(props: PropsType) {
         const newProps = mapValues(props, this._convertProp);
-        if (props.onStreaming) {
+        var {height, width} = Dimensions.get('window');
+        var ratio = PixelRatio.get();
+        newProps.screenHeight = height*ratio;
+        newProps.screenWidth = width*ratio;
+  
+      if (props.onStreaming) {
             newProps.streamingEnabled = true;
         }
         if (props.onBarCodeRead) {

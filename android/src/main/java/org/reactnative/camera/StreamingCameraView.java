@@ -92,6 +92,9 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
   private int mFaceDetectionClassifications = RNFaceDetector.NO_CLASSIFICATIONS;
   private int mGoogleVisionBarCodeType = Barcode.ALL_FORMATS;
 
+  private int _screenWidth;
+  private int _screenHeight;
+
   private Rect wRect;
 
   public StreamingCameraView(ThemedReactContext themedReactContext) {
@@ -161,7 +164,7 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
         if(willStreaming){
           streamingLock = true;
           StreamingAsyncTaskDelegate delegate = (StreamingAsyncTaskDelegate) cameraView;
-          new StreamingAsyncTask(delegate, data, width, height, rotation, wRect).execute();
+          new StreamingAsyncTask(delegate, data, width, height, _screenWidth, _screenHeight, rotation, wRect).execute();
         }
         if (willCallBarCodeTask) {
           barCodeScannerTaskLock = true;
@@ -206,10 +209,10 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
     this.setBackgroundColor(Color.BLACK);
     wRect = new Rect(left, top, right, bottom);
     if (orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-      if (ratio * height < width) {
+      if (ratio * height < width) { //横長
         correctHeight = (int) (width / ratio);
         correctWidth = (int) width;
-      } else {
+      } else { // 縦長
         correctWidth = (int) (height * ratio);
         correctHeight = (int) height;
       }
@@ -225,6 +228,15 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
     int paddingX = (int) ((width - correctWidth) / 2);
     int paddingY = (int) ((height - correctHeight) / 2);
     preview.layout(paddingX, paddingY, correctWidth + paddingX, correctHeight + paddingY);
+  }
+
+
+  public void setScreenWidth(int screenWidth){
+    this._screenWidth = screenWidth;
+  }
+
+  public void setScreenHeight(int screenHeight){
+    this._screenHeight = screenHeight;
   }
 
   @SuppressLint("all")
@@ -344,11 +356,11 @@ public class StreamingCameraView extends CameraView implements LifecycleEventLis
     RNCameraViewHelper.emitStreamingCompletedEvent(this);
   }
 
-  public void onStreaming(String base64, int height, int width) {
+  public void onStreaming(String base64, int height, int width, Rect rect) {
     if (!mShouldStreaming) {
       return;
     }
-    RNCameraViewHelper.emitStreamingEvent(this, base64, height, width);
+    RNCameraViewHelper.emitStreamingEvent(this, base64, height, width, rect);
   }
   public void onBarCodeRead(Result barCode) {
     String barCodeType = barCode.getBarcodeFormat().toString();

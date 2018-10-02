@@ -1,5 +1,6 @@
 package org.reactnative.camera.events;
 
+import android.graphics.Rect;
 import android.support.v4.util.Pools;
 
 import com.facebook.react.bridge.Arguments;
@@ -15,23 +16,25 @@ public class StreamingEvent extends Event<StreamingEvent> {
   private String mBase64;
   private int mHeight;
   private int mWidth;
+  private Rect mRect;
 
   private StreamingEvent() {}
 
-  public static StreamingEvent obtain(int viewTag, String base64, int height, int width) {
+  public static StreamingEvent obtain(int viewTag, String base64, int height, int width, Rect rect) {
     StreamingEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new StreamingEvent();
     }
-    event.init(viewTag, base64, height, width);
+    event.init(viewTag, base64, height, width, rect);
     return event;
   }
 
-  private void init(int viewTag, String base64, int height, int width) {
+  private void init(int viewTag, String base64, int height, int width, Rect rect) {
     super.init(viewTag);
     mBase64 = base64;
     mHeight = height;
     mWidth = width;
+    mRect = rect;
   }
 
   @Override
@@ -48,8 +51,8 @@ public class StreamingEvent extends Event<StreamingEvent> {
     WritableMap event = Arguments.createMap();
     event.putInt("target", getViewTag());
     event.putString("imagedata", mBase64);
-    event.putInt("width", mHeight);
-    event.putInt("height", mWidth);
+    event.putInt("width", 600);
+    event.putInt("height", 600);
     return event;
   }
 }

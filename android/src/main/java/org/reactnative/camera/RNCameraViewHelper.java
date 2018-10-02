@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.media.CamcorderProfile;
 import android.os.Build;
 import android.support.media.ExifInterface;
@@ -213,8 +214,8 @@ public class RNCameraViewHelper {
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }
 
-  public static void emitStreamingEvent(ViewGroup view, String base64, int height, int width) {
-    StreamingEvent event = StreamingEvent.obtain(view.getId(), base64, height, width);
+  public static void emitStreamingEvent(ViewGroup view, String base64, int height, int width, Rect rect) {
+    StreamingEvent event = StreamingEvent.obtain(view.getId(), base64, height, width, rect);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }

@@ -74,6 +74,16 @@ public class StreamingViewManager extends ViewGroupManager<StreamingCameraView> 
     view.setFacing(type);
   }
 
+  @ReactProp(name = "screenHeight")
+  public void setScreenHeight(StreamingCameraView view, int screenHeight) {
+    view.setScreenHeight(screenHeight);
+  }
+
+  @ReactProp(name = "screenWidth")
+  public void setScreenWidth(StreamingCameraView view, int screenWidth) {
+    view.setScreenWidth(screenWidth);
+  }
+
   @ReactProp(name = "ratio")
   public void setRatio(StreamingCameraView view, String ratio) {
     view.setAspectRatio(AspectRatio.parse(ratio));
